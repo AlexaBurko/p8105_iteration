@@ -1,0 +1,68 @@
+---
+title: "iteration"
+author: "Alexa Burko"
+date: "2026-10-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(rvest)
+library(readxl)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## Functions!
+
+Start small with Z scores
+```{r}
+x_vec = rnorm(n = 40, mean = 12, sd = 63)
+
+(x_vec - mean(x_vec)) / sd(x_vec)
+```
+
+Let's turn this into a function
+```{r}
+z_scores = function(x) {
+  
+  if(!is.numeric(x)){
+    stop("Input x must be numeric")
+  } else if (length(x) < 5) {
+    stop("x should have 5 or more numbers")
+  }
+  
+ z = (x - mean(x)) / sd(x)
+ 
+ return(z)
+  
+}
+
+#in the function it will take x and do those to it
+```
+
+Does this actually work???
+```{r}
+z_scores(x_vec)
+z_scores(rpois(4000, lambda = 12))
+
+# z_scores("my name is jeff") wont work
+# z_scores(iris) also wont work
+# z_scores(c(TRUE, TRUE, FALSE, FALSE)) wont work now that i added that input must be numeric in the function
+# z_scores(3) wont work bc not enough numbers to calculate z-score
+```
+
