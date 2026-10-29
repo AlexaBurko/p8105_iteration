@@ -66,3 +66,28 @@ z_scores(rpois(4000, lambda = 12))
 # z_scores(3) wont work bc not enough numbers to calculate z-score
 ```
 
+## Mean and sd
+
+```{r}
+mean(x_vec)
+sd(x_vec)
+```
+Write a function that reutrns the mean and sd of an input vector
+```{r}
+mean_and_sd = function(x){
+  
+  return_df =
+    tibble(
+  mean = mean(x),
+  sd = sd(x))
+  
+  return(return_df)
+}
+```
+
+Check that thuis works
+
+```{r}
+mean_and_sd(x_vec)
+```
+
