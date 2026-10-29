@@ -85,9 +85,30 @@ mean_and_sd = function(x){
 }
 ```
 
-Check that thuis works
+```{r}
+source("source/mean_and_sd.R")
+```
+
+
+Check that this works
 
 ```{r}
 mean_and_sd(x_vec)
 ```
+## Motivate and write another one!!
 
+```{r}
+source("source/sim_mean_sd.R")
+```
+
+```{r}
+sim_mean_sd(n_obs = 40, mu = 12, sigma = 3)
+
+sim_mean_sd(50, 12, 3)
+# R uses positional matching of the arguments, assumes that the numbers you give are in the right order of the function
+
+sim_mean_sd(mu = 12, n_obs = 40, sigma = 3)
+
+sim_mean_sd(50)
+# this works if you set defaults for the other arguments
+```
