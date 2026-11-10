@@ -32,6 +32,7 @@ scale_fill_discrete = scale_fill_viridis_d
 ```{r}
 source("source/sim_mean_sd.R")
 source("source/sim_slr.R")
+source("source/birthday_repeated.R")
 
 set.seed(1236)
 ```
@@ -186,5 +187,47 @@ slr_results_df |>
   geom_point()
 
 #estimated intercept and estimated slope are negatively correlated with each other
+```
+
+## birthday problem
+
+```{r}
+birthdays = sample(1:365, size = 5, replace = TRUE)
+# a draw of 5 birthdays
+# replace = TRUE makes it so that you can draw the same numbers multiple times
+
+repeated_birthdays = length(unique(birthdays)) < 5
+
+repeated_birthdays
+```
+Turn this into a function
+
+run it a bunch
+```{r}
+birthday_repeated(147)
+```
+
+run it a bunch but good
+```{r}
+birthday_results_df =
+  expand_grid(
+    number_of_people = 5:50,
+    iter = 1:1000
+  ) |> 
+  mutate(
+    repeated = map_lgl(number_of_people, birthday_repeated)
+  )
+
+# map_lgl unnests the logical variable
+```
+
+look at these results
+```{r}
+birthday_results_df |> 
+  group_by(number_of_people) |> 
+  summarize(prob_of_repeat = mean(repeated)) |> 
+  ggplot(aes(x = number_of_people, y = prob_of_repeat)) +
+  geom_point() +
+  geom_line()
 ```
 
