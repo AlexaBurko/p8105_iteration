@@ -25,4 +25,117 @@ options(
 
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
+
+# r cache = TRUE tells knitr to save the results and generated R objects of that chunk to disk. When you re-knit the document, knitr skips re-running the chunk and reloads the saved output automatically, provided the code inside the chunk has not changed
 ```
+
+```{r}
+source("source/sim_mean_sd.R")
+
+set.seed(1236)
+```
+
+## Mean and SD
+
+Can we check central limit theorem using simulations
+```{r}
+sim_mean_sd(n_obs = 30)
+```
+
+Let's do this but keep track of results
+```{r}
+output = vector("list", length = 1000)
+
+for (i in 1:1000) {
+  
+  output[[i]] = sim_mean_sd(n_obs = 30)
+}
+
+# do the sim_mean_sd function 1000 times
+```
+
+Inspect results
+```{r}
+output |> 
+  bind_rows() |> 
+  summarize(
+    emp_m = mean(mean),
+    emp_se = sd(mean)
+  )
+
+# now have 1000 rows and 2 columns 
+
+# empirical mean is the average of the 1000 means
+
+# empirical sd is the sd of the 1000 means
+```
+
+```{r}
+output |> 
+  bind_rows() |> 
+ ggplot(aes(x = mean))+
+  geom_density()
+
+# underlying data generating mechanism was a normal distribution, so plot looks normally distributed
+```
+
+Let's do this using tibbles and map instead!
+```{r}
+sim_results_df = 
+  tibble(
+    samp_size = rep(30, 1000)
+  ) |> 
+  mutate(
+    est_df = map(samp_size, sim_mean_sd)
+  ) |> 
+  unnest(est_df)
+```
+
+Look at results
+```{r}
+sim_results_df |> 
+  ggplot(aes(x = mean))+
+  geom_density()
+```
+
+## Change 'n'
+```{r}
+sim_results_df = 
+  expand_grid(
+    samp_size = c(30, 60, 120, 240),
+    iter = 1:1000
+  ) |> 
+  mutate(
+    est_df = map(samp_size, sim_mean_sd)
+  ) |> 
+  unnest(est_df)
+
+# expand_grid creates a data frame that has all possible combinations of the inputs (here it is samp_size and iter) (so sample size 30 1000 times, sample size 60 1000 times, etc)
+```
+
+```{r}
+sim_results_df |> 
+  mutate(
+    samp_size = str_c("n =", samp_size),
+    # converts to character and for every row, it takes the text "n =" and combines it with whatever value is currently stored in samp_size
+    samp_size = fct_inorder(samp_size)
+  ) |> 
+  ggplot(aes(x = samp_size, y = mean))+
+  geom_violin()
+```
+
+Look at the numbers
+```{r}
+sim_results_df |> 
+  mutate(
+    samp_size = str_c("n =", samp_size),
+    samp_size = fct_inorder(samp_size)
+  ) |> 
+  group_by(samp_size) |> 
+    summarize(
+    emp_m = mean(mean),
+    emp_se = sd(mean)
+  )
+  
+```
+
